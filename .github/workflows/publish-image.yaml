@@ -1,0 +1,75 @@
+name: Docker
+
+on:
+  push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+  # Run tests for any PRs.
+  pull_request:
+
+env:
+  # TODO: Change variable to your image's name.
+  IMAGE_NAME_1: webapp-v1
+  IMAGE_NAME_2: webapp-v2
+
+jobs:
+  # Run tests.
+  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
+ # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image1
+        run: docker build --tag $IMAGE_NAME_1 ./webapp-v1
+
+      - name: build image2
+        run: docker build --tag $IMAGE_NAME_2 ./webapp-v2
+
+      - name: Log into GitHub Container Registry
+      # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
+        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image1 to GitHub Container Registry
+        run: |
+          IMAGE_ID_1=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME_1
+          # Change all uppercase to lowercase
+          IMAGE_ID_1=$(echo $IMAGE_ID_1 | tr '[A-Z]' '[a-z]')
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID_1
+          echo VERSION=$VERSION
+          docker tag $IMAGE_NAME_1 $IMAGE_ID_1:$VERSION
+          docker push $IMAGE_ID_1:$VERSION
+
+      - name: Push image2 to GitHub Container Registry
+        run: |
+          IMAGE_ID_2=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME_2
+          # Change all uppercase to lowercase
+          IMAGE_ID_2=$(echo $IMAGE_ID_2 | tr '[A-Z]' '[a-z]')
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID_2
+          echo VERSION=$VERSION
+          docker tag $IMAGE_NAME_2 $IMAGE_ID_2:$VERSION
+          docker push $IMAGE_ID_2:$VERSION
+
