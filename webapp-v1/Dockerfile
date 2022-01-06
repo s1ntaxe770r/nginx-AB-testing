@@ -1,9 +1,27 @@
-FROM scratch 
+FROM golang:latest as builder
+
+RUN mkdir /app
 
 WORKDIR /app
 
-COPY v1 /app/server
+COPY go.mod .
 
-EXPOSE 8080 
+COPY go.sum .
 
-CMD ["./server"]
+RUN go mod download 
+
+COPY . . 
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server
+
+FROM alpine 
+
+RUN apk add --no-cache ca-certificates
+
+COPY --from=builder /app/server /app/server 
+
+RUN mkdir -p /app/images
+
+EXPOSE 8080
+
+ENTRYPOINT ["/app/server"]
