@@ -1,9 +1,17 @@
-FROM scratch 
+FROM golang:latest as builder
 
+WORKDIR /app
 
+COPY . . 
 
-COPY v2 .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server main.go
 
-EXPOSE 9090
+FROM alpine 
 
-CMD ["./v2"]
+RUN apk add --no-cache ca-certificates
+
+COPY --from=builder /app/server /server 
+
+EXPOSE 9090 
+
+ENTRYPOINT ["/server"]
