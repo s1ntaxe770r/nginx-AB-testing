@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: webapp-v1
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: webapp
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: webapp-v1
-        image: ghcr.io/s1ntaxe770r/webapp-v1:latest
+        image: ghcr.io/s1ntaxe770r/webapp-v1
         resources:
           limits:
             memory: "128Mi"
@@ -30,7 +30,7 @@ kind: Deployment
 metadata:
   name: webapp-v2  
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: webapp
@@ -43,7 +43,7 @@ spec:
     spec:
       containers:
       - name: webapp-v2
-        image: ghcr.io/s1ntaxe770r/kmn2:latest
+        image: ghcr.io/s1ntaxe770r/webapp-v2
         resources:
           limits:
             memory: "128Mi"
