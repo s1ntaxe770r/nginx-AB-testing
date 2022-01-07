@@ -1,15 +1,19 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: webapp-ingress-v1
+  name: webapp-v1-ingress
   annotations:
-    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/app-root: /home
 spec:
+  ingressClassName: nginx
   rules:
-   - host: "*"
-     http:
-       paths: 
-       - backend:
-            serviceName: webapp-v1
-            servicePort: 80 
-         path: /
+  - host: 0703b49c-6f02-4010-b27a-98380c244878.k8s.civo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: webapp-v1  
+            port:
+              number: 80
+        path: /home
+        pathType: Prefix
