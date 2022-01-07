@@ -11,7 +11,8 @@ FROM alpine
 
 RUN apk add --no-cache ca-certificates
 
-COPY --from=builder /app/server /server 
+COPY --from=builder /app/server /server
+COPY --from=builder /app/static /static 
 
 EXPOSE 8080 
 
