@@ -5,11 +5,11 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/app-root: /home
     nginx.ingress.kubernetes.io/canary: "true"
-    nginx.ingress.kubernetes.io/canary-weight: "50"
+    nginx.ingress.kubernetes.io/canary-weight: "60"
 spec:
   ingressClassName: nginx
   rules:
-  - host: 0703b49c-6f02-4010-b27a-98380c244878.k8s.civo.com
+  - host: ""
     http:
       paths:
       - path: /home
@@ -26,5 +26,7 @@ spec:
             name: webapp-v2
             port:
               number: 80
+
+
 
 
