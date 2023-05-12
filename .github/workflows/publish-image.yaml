@@ -30,6 +30,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Build image1
         run: docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --tag $IMAGE_NAME_1 ./webapp-v1
