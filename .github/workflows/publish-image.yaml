@@ -15,8 +15,8 @@ on:
 
 env:
   # TODO: Change variable to your image's name.
-  IMAGE_NAME_1: webapp-v1
-  IMAGE_NAME_2: webapp-v2
+  IMAGE_NAME_1: ghcr.io/${{ github.repository_owner }}/webapp-v1
+  IMAGE_NAME_2: ghcr.io/${{ github.repository_owner }}/webapp-v2
 
 jobs:
   # Run tests.
@@ -38,10 +38,10 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build image1
-        run: docker buildx build --platform linux/amd64,linux/arm64 --tag $IMAGE_NAME_1 ./webapp-v1
+        run: docker buildx build --platform linux/amd64,linux/arm64 --tag $IMAGE_NAME_1:latest ./webapp-v1
 
       - name: build image2
-        run: docker buildx build --platform linux/amd64,linux/arm64 --tag $IMAGE_NAME_2 ./webapp-v2
+        run: docker buildx build --platform linux/amd64,linux/arm64 --tag $IMAGE_NAME_2:latest ./webapp-v2
 
       - name: Log into GitHub Container Registry
       # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
@@ -60,7 +60,6 @@ jobs:
           [ "$VERSION" == "master" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID_1
           echo VERSION=$VERSION
-          docker tag $IMAGE_NAME_1 $IMAGE_ID_1:$VERSION
           docker push $IMAGE_ID:$VERSION
 
 
@@ -77,5 +76,4 @@ jobs:
           [ "$VERSION" == "master" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID_2
           echo VERSION=$VERSION
-          docker tag $IMAGE_NAME_2 $IMAGE_ID_2:$VERSION
           docker push $IMAGE_ID:$VERSION
