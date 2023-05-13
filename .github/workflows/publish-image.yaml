@@ -37,43 +37,38 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build image1
-        run: docker buildx build --platform linux/amd64,linux/arm64 --tag $IMAGE_NAME_1:latest ./webapp-v1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+      # build multi-arch image
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME_1 }}:latest
+            ${{ env.IMAGE_NAME_1 }}:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source= ${{ github.repository }}
 
-      - name: build image2
-        run: docker buildx build --platform linux/amd64,linux/arm64 --tag $IMAGE_NAME_2:latest ./webapp-v2
-
-      - name: Log into GitHub Container Registry
-      # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
-        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Push image1 to GitHub Container Registry
-        run: |
-          IMAGE_ID_1=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME_1
-          # Change all uppercase to lowercase
-          IMAGE_ID_1=$(echo $IMAGE_ID_1 | tr '[A-Z]' '[a-z]')
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
-          echo IMAGE_ID=$IMAGE_NAME_1
-          echo VERSION=$VERSION
-          docker push $IMAGE_ID:$VERSION
-
-
-      - name: Push image2 to GitHub Container Registry
-        run: |
-          IMAGE_ID_2=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME_2
-          # Change all uppercase to lowercase
-          IMAGE_ID_2=$(echo $IMAGE_ID_2 | tr '[A-Z]' '[a-z]')
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
-          echo IMAGE_ID=$IMAGE_NAME_2
-          echo VERSION=$VERSION
-          docker push $IMAGE_ID:$VERSION
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+      # build multi-arch image
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME_2 }}:latest
+            ${{ env.IMAGE_NAME_2 }}:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source= ${{ github.repository }}             
