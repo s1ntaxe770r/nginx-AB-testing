@@ -41,7 +41,7 @@ jobs:
         run: docker buildx build --platform linux/amd64,linux/arm64 --tag $IMAGE_NAME_1 ./webapp-v1
 
       - name: build image2
-        run: docker buildx build --platform linux/amd64,linux/arm64,--tag $IMAGE_NAME_2 ./webapp-v2
+        run: docker buildx build --platform linux/amd64,linux/arm64 --tag $IMAGE_NAME_2 ./webapp-v2
 
       - name: Log into GitHub Container Registry
       # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
