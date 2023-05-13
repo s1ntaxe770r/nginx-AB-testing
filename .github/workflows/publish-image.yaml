@@ -46,6 +46,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64,linux/arm64
+          context: ./webapp-v1
           push: true
           tags: |
             ${{ env.IMAGE_NAME_1 }}:latest
@@ -62,7 +63,9 @@ jobs:
       # build multi-arch image
       - name: Build and push
         uses: docker/build-push-action@v4
+
         with:
+          context: ./webapp-v2
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
