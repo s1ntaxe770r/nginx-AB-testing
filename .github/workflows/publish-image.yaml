@@ -61,7 +61,7 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID_1
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME_1 $IMAGE_ID_1:$VERSION
-          docker push $IMAGE_ID_1:$VERSION
+          docker push $IMAGE_ID:$VERSION
 
 
       - name: Push image2 to GitHub Container Registry
@@ -78,4 +78,4 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID_2
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME_2 $IMAGE_ID_2:$VERSION
-          docker push $IMAGE_ID_2:$VERSION
+          docker push $IMAGE_ID:$VERSION
